@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical XP - Consultant & Pharmacist</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #0076fd;
+            --primary-hover: #0056b8;
+            --bg-light: #f4f8fa;
+            --text-dark: #2c3e50;
+            --border-color: #dce4ec;
+            --white: #ffffff;
+            --shadow: 0 4px 20px rgba(0, 118, 253, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: var(--white);
+            width: 100%;
+            max-width: 650px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Section */
+        header {
+            background: linear-gradient(135deg, #ffffff, #ebf3fe);
+            padding: 25px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        header .logo-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: -0.5px;
+        }
+
+        header p {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        /* Application Main Body */
+        .app-body {
+            padding: 25px;
+            flex-grow: 1;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: block;
+            margin-bottom: 10px;
+            color: #334155;
+        }
+
+        /* Input Elements */
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 12px 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            resize: none;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            border-color: var(--primary);
+        }
+
+        /* Quick Symptom Tags */
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+            margin-bottom: 25px;
+        }
+
+        .symptom-tag {
+            background: #eef5ff;
+            color: var(--primary);
+            border: 1px solid #cfe2fe;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .symptom-tag:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Animated Action Button */
+        .btn-center-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .diagnose-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 118, 253, 0.3);
+        }
+
+        .diagnose-btn:hover {
+            background: var(--primary-hover);
+        }
+
+        /* Rolling/Spinning Animation when processing */
+        .diagnose-btn.rolling {
+            animation: rollAndHold 1.5s linear infinite;
+            pointer-events: none;
+            background: #64748b;
+            box-shadow: none;
+        }
+
+        @keyframes rollAndHold {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(0.9); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+
+        /* Dynamic Dialogue Interview Box */
+        .dialogue-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--primary);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+            display: none; /* Controlled by JS */
+        }
+
+        .dialogue-box p {
+            font-weight: 500;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+        }
+
+        .dialogue-options {
+            display: flex;
+            gap: 10px;
+        }
+
+        .dialogue-options button {
+            background: white;
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .dialogue-options button:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: #f0f7ff;
+        }
+
+        /* Output Prescription Results Block */
+        .result-panel {
+            display: none;
+            border-top: 2px dashed var(--border-color);
+            padding-top: 25px;
+            margin-top: 10px;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title i {
+            color: var(--primary);
+        }
+
+        .result-block {
+            background: #f8fafc;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #edf2f7;
+        }
+
+        .result-block ul {
+            list-style-type: none;
+        }
+
+        .result-block ul li {
+            position: relative;
+            padding-left: 20px;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .result-block ul li::before {
+            content: "•";
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 1.2rem;
+            position: absolute;
+            left: 0;
+            top: -2px;
+        }
+
+        /* Action Buttons at bottom */
+        .action-footer {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .print-btn {
+            background: #e2e8f0;
+            color: #334155;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.2s;
+        }
+
+        .print-btn:hover {
+            background: #cbd5e1;
+        }
+
+        /* End Note Footer */
+        footer {
+            background: #f8fafc;
+            padding: 20px;
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.85rem;
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        footer strong {
+            color: #334155;
+        }
+
+        footer a {
+            color: #25d366;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Print Media Queries */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                border: none;
+                max-width: 100%;
+            }
+            .app-body, .tags-container, .btn-center-wrapper, .dialogue-box, .print-btn {
+                display: none !important;
+            }
+            .result-panel {
+                display: block !important;
+                border: none;
+                padding: 0;
+            }
+            footer {
+                border-top: 1px solid #000;
+                background: white;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="printableArea">
+    <header>
+        <div class="logo-icon"><i class="fa-solid fa-heart-pulse"></i></div>
+        <h1>Medical XP</h1>
+        <p>AI Clinical Consultant & Pharmacist</p>
+    </header>
+
+    <div class="app-body">
+        <label for="symptomsInput">Mention your Symptoms</label>
+        <textarea id="symptomsInput" placeholder="Describe how you are feeling or select options below..."></textarea>
+        
+        <div class="tags-container">
+            <span class="symptom-tag" onclick="addSymptom('Fever')">Fever</span>
+            <span class="symptom-tag" onclick="addSymptom('Headache')">Headache</span>
+            <span class="symptom-tag" onclick="addSymptom('Dry Cough')">Dry Cough</span>
+            <span class="symptom-tag" onclick="addSymptom('Sore Throat')">Sore Throat</span>
+            <span class="symptom-tag" onclick="addSymptom('Runny Nose')">Runny Nose</span>
+            <span class="symptom-tag" onclick="addSymptom('Fatigue')">Fatigue</span>
+            <span class="symptom-tag" onclick="addSymptom('Stomach Ache')">Stomach Ache</span>
+            <span class="symptom-tag" onclick="addSymptom('Nausea')">Nausea</span>
+        </div>
+
+        <div class="btn-center-wrapper">
+            <button class="diagnose-btn" id="diagnoseBtn" onclick="startDiagnosis()">
+                <i class="fa-solid fa-stethoscope"></i> Diagnose
+            </button>
+        </div>
+
+        <div class="dialogue-box" id="dialogueBox">
+            <p id="questionText">Loading clinical follow-up question...</p>
+            <div class="dialogue-options" id="dialogueOptions">
+                </div>
+        </div>
+
+        <div class="result-panel" id="resultPanel">
+            
+            <div class="section-title"><i class="fa-solid fa-file-medical"></i> 1. Possible Reasons</div>
+            <div class="result-block">
+                <ul id="reasonsList">
+                    </ul>
+            </div>
+
+            <div class="section-title"><i class="fa-solid fa-capsules"></i> 2. Medical Prescription</div>
+            <div class="result-block">
+                <ul id="prescriptionList" style="font-weight: 500;">
+                    </ul>
+            </div>
+
+            <div class="section-title"><i class="fa-solid fa-triangle-exclamation"></i> 3. Actions & Restrictions</div>
+            <div class="result-block">
+                <ul id="actionsList">
+                    </ul>
+            </div>
+
+            <div class="action-footer">
+                <button class="print-btn" onclick="window.print()">
+                    <i class="fa-solid fa-print"></i>
+                    <i class="fa-solid fa-arrow-down"></i> 
+                    Print Prescription
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Powered by <strong>Medical XP</strong></p>
+        <p>Shehan D Perera</p>
+        <p><a href="https://wa.me/0712220206" target="_blank"><i class="fa-brands fa-whatsapp"></i> Connect to learn AI</a></p>
+    </footer>
+</div>
+
+<script>
+    // Quick helper to append tapped symptoms into input text field
+    function addSymptom(symptom) {
+        const input = document.getElementById('symptomsInput');
+        if (input.value.trim() === "") {
+            input.value = symptom + ", ";
+        } else {
+            // Ensure spacing is orderly
+            if (!input.value.endsWith(", ") && !input.value.endsWith(",")) {
+                input.value += ", ";
+            }
+            input.value += symptom + ", ";
+        }
+        input.focus();
+    }
+
+    // Array simulating step-by-step diagnostic questionnaire logic
+    let currentStep = 0;
+    const questions = [
+        {
+            q: "How long have you been experiencing these principal symptoms?",
+            options: ["Less than 24 hours", "2 to 3 days", "More than a week"]
+        },
+        {
+            q: "Are you running an active body temperature spike (Fever)?",
+            options: ["No Fever", "Mild (99°F - 101°F)", "High (>101°F)"]
+        },
+        {
+            q: "Do you feel significant body aches, exhaustion, or localized chest congestion?",
+            options: ["Just minor discomfort", "Severe exhaustion & aches", "None"]
+        }
+    ];
+
+    function startDiagnosis() {
+        const inputVal = document.getElementById('symptomsInput').value.trim();
+        if(!inputVal) {
+            alert("Please input or select some symptoms first.");
+            return;
+        }
+
+        const btn = document.getElementById('diagnoseBtn');
+        // Trigger visual button spin dynamic
+        btn.classList.add('rolling');
+        
+        setTimeout(() => {
+            btn.classList.remove('rolling');
+            // Show dialogue interactive questionnaire panel
+            document.getElementById('dialogueBox').style.display = 'block';
+            currentStep = 0;
+            showQuestion();
+        }, 1500); // Simulated delay for the spinning animation
+    }
+
+    function showQuestion() {
+        if (currentStep < questions.length) {
+            document.getElementById('questionText').innerText = questions[currentStep].q;
+            const optionsDiv = document.getElementById('dialogueOptions');
+            optionsDiv.innerHTML = ''; // Reset UI panel
+            
+            questions[currentStep].options.forEach(opt => {
+                const button = document.createElement('button');
+                button.innerText = opt;
+                button.onclick = () => {
+                    currentStep++;
+                    showQuestion();
+                };
+                optionsDiv.appendChild(button);
+            });
+        } else {
+            // All interactive questions finished, show analytical clinical summary
+            document.getElementById('dialogueBox').style.display = 'none';
+            displayMedicalReport();
+        }
+    }
+
+    // Mock clinical intelligence matrix for standard medical ranges (Safe for personal use)
+    function displayMedicalReport() {
+        const symptomsText = document.getElementById('symptomsInput').value.toLowerCase();
+        
+        let reasons = ["Common Acute Viral Syndrome (Mild Upper Respiratory tract reaction)", "Fatigue induced by transient immune deployment"];
+        let meds = ["Tab. Paracetamol 500mg --- 1 tablet when necessary up to 3 times daily (After meals)", "Syrup Vitamin C --- 10ml once daily in the morning (After meals) for 5 days"];
+        let instructions = ["Maintain a high rate of oral hydration (Drink plenty of warm water)", "Get strict bed rest for 24-48 hours", "Avoid cold beverages, ice items, and oily food matrices", "Refrain from heavy cardiovascular workouts until recovery complete"];
+
+        // Dynamic customization check if specific markers found
+        if(symptomsText.includes('stomach') || symptomsText.includes('nausea')) {
+            reasons = ["Mild Gastric Hyperacidity / Dyspepsia", "Acute transient Gastroenteritis irritation"];
+            meds = ["Tab. Famotidine 20mg --- 1 tablet twice daily (30 mins before meals) for 3 days", "Oral Rehydration Salts (ORS) --- 1 sachet dissolved in 1L clean water to sip slowly throughout the day"];
+            instructions = ["Avoid spicy, deep-fried, or highly acidic food variants", "Eat small frequent portions instead of heavy standard meals", "Rest well and avoid rigorous physical motion directly after eating"];
+        }
+
+        // Render data lists into domestic UI
+        renderList('reasonsList', reasons);
+        renderList('prescriptionList', meds);
+        renderList('actionsList', instructions);
+
+        // Smooth reveal of final medical script display
+        const resultPanel = document.getElementById('resultPanel');
+        resultPanel.style.display = 'block';
+        resultPanel.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function renderList(elementId, itemsArray) {
+        const ul = document.getElementById(elementId);
+        ul.innerHTML = '';
+        itemsArray.forEach(text => {
+            const li = document.createElement('li');
+            li.innerText = text;
+            ul.appendChild(li);
+        });
+    }
+</script>
+
+</body>
+</html>
