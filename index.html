@@ -181,7 +181,7 @@
             border-radius: 8px;
             padding: 20px;
             margin-bottom: 25px;
-            display: none; /* Controlled by JS */
+            display: none;
         }
 
         .dialogue-box p {
@@ -318,6 +318,64 @@
             text-decoration: underline;
         }
 
+        /* Fullscreen Advertisement Overlay styles */
+        .ad-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .ad-container {
+            position: relative;
+            max-width: 90%;
+            max-height: 80%;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            cursor: pointer; /* Changes cursor to hand pointer to signify it's clickable */
+            transition: transform 0.2s ease;
+        }
+
+        .ad-container:hover {
+            transform: scale(1.01); /* Subtle swell on hover */
+        }
+
+        .ad-container img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            max-height: 70vh;
+            object-fit: contain;
+        }
+
+        /* 4-Second Filling Timer Line */
+        .ad-timer-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 6px;
+            background: var(--primary);
+            width: 0%;
+        }
+
+        .fill-progress {
+            animation: fillUp 4s linear forwards;
+        }
+
+        @keyframes fillUp {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
         /* Print Media Queries */
         @media print {
             body {
@@ -329,7 +387,7 @@
                 border: none;
                 max-width: 100%;
             }
-            .app-body, .tags-container, .btn-center-wrapper, .dialogue-box, .print-btn {
+            .app-body, .tags-container, .btn-center-wrapper, .dialogue-box, .print-btn, .ad-overlay {
                 display: none !important;
             }
             .result-panel {
@@ -345,6 +403,13 @@
     </style>
 </head>
 <body>
+
+<div class="ad-overlay" id="adOverlay">
+    <div class="ad-container" onclick="redirectToWhatsApp()">
+        <img src="ad1.png" alt="Sponsored Advertisement">
+        <div class="ad-timer-bar" id="adTimerBar"></div>
+    </div>
+</div>
 
 <div class="container" id="printableArea">
     <header>
@@ -384,20 +449,17 @@
             
             <div class="section-title"><i class="fa-solid fa-file-medical"></i> 1. Possible Reasons</div>
             <div class="result-block">
-                <ul id="reasonsList">
-                    </ul>
+                <ul id="reasonsList"></ul>
             </div>
 
             <div class="section-title"><i class="fa-solid fa-capsules"></i> 2. Medical Prescription</div>
             <div class="result-block">
-                <ul id="prescriptionList" style="font-weight: 500;">
-                    </ul>
+                <ul id="prescriptionList" style="font-weight: 500;"></ul>
             </div>
 
             <div class="section-title"><i class="fa-solid fa-triangle-exclamation"></i> 3. Actions & Restrictions</div>
             <div class="result-block">
-                <ul id="actionsList">
-                    </ul>
+                <ul id="actionsList"></ul>
             </div>
 
             <div class="action-footer">
@@ -418,13 +480,11 @@
 </div>
 
 <script>
-    // Quick helper to append tapped symptoms into input text field
     function addSymptom(symptom) {
         const input = document.getElementById('symptomsInput');
         if (input.value.trim() === "") {
             input.value = symptom + ", ";
         } else {
-            // Ensure spacing is orderly
             if (!input.value.endsWith(", ") && !input.value.endsWith(",")) {
                 input.value += ", ";
             }
@@ -433,7 +493,6 @@
         input.focus();
     }
 
-    // Array simulating step-by-step diagnostic questionnaire logic
     let currentStep = 0;
     const questions = [
         {
@@ -458,23 +517,21 @@
         }
 
         const btn = document.getElementById('diagnoseBtn');
-        // Trigger visual button spin dynamic
         btn.classList.add('rolling');
         
         setTimeout(() => {
             btn.classList.remove('rolling');
-            // Show dialogue interactive questionnaire panel
             document.getElementById('dialogueBox').style.display = 'block';
             currentStep = 0;
             showQuestion();
-        }, 1500); // Simulated delay for the spinning animation
+        }, 1500);
     }
 
     function showQuestion() {
         if (currentStep < questions.length) {
             document.getElementById('questionText').innerText = questions[currentStep].q;
             const optionsDiv = document.getElementById('dialogueOptions');
-            optionsDiv.innerHTML = ''; // Reset UI panel
+            optionsDiv.innerHTML = '';
             
             questions[currentStep].options.forEach(opt => {
                 const button = document.createElement('button');
@@ -486,13 +543,36 @@
                 optionsDiv.appendChild(button);
             });
         } else {
-            // All interactive questions finished, show analytical clinical summary
             document.getElementById('dialogueBox').style.display = 'none';
-            displayMedicalReport();
+            runAdSequence();
         }
     }
 
-    // Mock clinical intelligence matrix for standard medical ranges (Safe for personal use)
+    function runAdSequence() {
+        const overlay = document.getElementById('adOverlay');
+        const timerBar = document.getElementById('adTimerBar');
+        
+        overlay.style.display = 'flex';
+        timerBar.classList.add('fill-progress');
+
+        setTimeout(() => {
+            overlay.style.display = 'none';
+            timerBar.classList.remove('fill-progress');
+            displayMedicalReport();
+        }, 4000); 
+    }
+
+    // Function to handle clicking on the ad image container
+    function redirectToWhatsApp() {
+        const phoneNumber = "0712220206";
+        // Properly URL encode the text string to handle spaces and exclamation marks safely
+        const message = encodeURIComponent("I would like to join FREE AI Learning Webinar!");
+        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
+        
+        // Opens the chat redirect link cleanly in a new window/tab
+        window.open(whatsappUrl, '_blank');
+    }
+
     function displayMedicalReport() {
         const symptomsText = document.getElementById('symptomsInput').value.toLowerCase();
         
@@ -500,19 +580,16 @@
         let meds = ["Tab. Paracetamol 500mg --- 1 tablet when necessary up to 3 times daily (After meals)", "Syrup Vitamin C --- 10ml once daily in the morning (After meals) for 5 days"];
         let instructions = ["Maintain a high rate of oral hydration (Drink plenty of warm water)", "Get strict bed rest for 24-48 hours", "Avoid cold beverages, ice items, and oily food matrices", "Refrain from heavy cardiovascular workouts until recovery complete"];
 
-        // Dynamic customization check if specific markers found
         if(symptomsText.includes('stomach') || symptomsText.includes('nausea')) {
             reasons = ["Mild Gastric Hyperacidity / Dyspepsia", "Acute transient Gastroenteritis irritation"];
             meds = ["Tab. Famotidine 20mg --- 1 tablet twice daily (30 mins before meals) for 3 days", "Oral Rehydration Salts (ORS) --- 1 sachet dissolved in 1L clean water to sip slowly throughout the day"];
             instructions = ["Avoid spicy, deep-fried, or highly acidic food variants", "Eat small frequent portions instead of heavy standard meals", "Rest well and avoid rigorous physical motion directly after eating"];
         }
 
-        // Render data lists into domestic UI
         renderList('reasonsList', reasons);
         renderList('prescriptionList', meds);
         renderList('actionsList', instructions);
 
-        // Smooth reveal of final medical script display
         const resultPanel = document.getElementById('resultPanel');
         resultPanel.style.display = 'block';
         resultPanel.scrollIntoView({ behavior: 'smooth' });
